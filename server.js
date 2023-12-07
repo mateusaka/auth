@@ -10,6 +10,9 @@ const db = require("./database/database");
 const LocalStrategy = require("passport-local").Strategy;
 const mongoose = require("mongoose");
 
+const indexRouter = require("./routes/index");
+const authRouter = require("./routes/auth");
+
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -26,9 +29,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req, res) => {
-    res.render("Index");
-});
+app.use("/", indexRouter);
+app.use("/auth", authRouter);
 
 app.listen(PORT, () => {
     console.log("Server is up!");
