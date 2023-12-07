@@ -1,4 +1,5 @@
 const passport = require("passport");
+const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 
 const AuthController = {
@@ -14,12 +15,12 @@ const AuthController = {
         try {
             const user = new User({
                 username: req.body.username,
-                password: req.body.password
+                password: bcrypt.hashSync(req.body.password)
             });
 
             await user.save();
 
-            res.redirect("/");
+            res.redirect("/auth/login");
         } catch (error) {
             res.send("Error");
         }

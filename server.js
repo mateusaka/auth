@@ -6,6 +6,7 @@ const session = require("express-session");
 const passport = require("passport");
 const path = require("path");
 const db = require("./database/database");
+const bcrypt = require("bcryptjs");
 
 const LocalStrategy = require("passport-local").Strategy;
 
@@ -26,7 +27,9 @@ passport.use(
         try {
             const user = await User.findOne({ username: username });
 
-            if(!user || user.password !== password) {
+            const match = bcrypt.compareSync(password, user.password);
+
+            if(!user || !match) {
                 return done(null, false, { message: "Incorrect username or password" });
             }
 
