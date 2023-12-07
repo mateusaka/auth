@@ -8,7 +8,8 @@ const path = require("path");
 const db = require("./database/database");
 
 const LocalStrategy = require("passport-local").Strategy;
-const mongoose = require("mongoose");
+
+const User = require("./models/user");
 
 const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth");
@@ -19,6 +20,34 @@ const PORT = process.env.PORT || 3000;
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+
+passport.use(
+    new LocalStrategy(async (username, password, done) => {
+        try {
+            const user = await User.findOne({ username: username });
+
+            if(!user || user.password !== password) {
+                return done(null, false, { message: "Incorrect username or password" });
+            }
+
+            return done(null, user);
+        } catch (error) {
+            return done(error);
+        }
+    })
+);
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+
+        done(null, user);
+    } catch (error) {
+        done(error);
+    }
+});
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
