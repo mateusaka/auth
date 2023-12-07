@@ -46,6 +46,12 @@ const AuthController = {
 
             res.redirect("/");
         });
+    },
+
+    currentUser: (req, res, next) => {
+        res.locals.currentUser = req.user;
+
+        next();
     }
 }
 
